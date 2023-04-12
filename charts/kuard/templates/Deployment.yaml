@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard-helm
+spec:
+  selector:
+    matchLabels:
+      app: kuard-helm
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kuard-helm
+    spec:
+      containers:
+        - image: gcr.io/kuar-demo/kuard-amd64:green
+          imagePullPolicy: IfNotPresent
+          name: kuard-helm
+          ports:
+            - containerPort: 8080

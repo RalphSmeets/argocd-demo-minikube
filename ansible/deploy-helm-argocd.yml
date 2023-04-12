@@ -1,0 +1,8 @@
+##########################################
+# Deploy k8s argocd helm chart
+##########################################
+
+- hosts: localhost
+  roles:
+    - argocd
+  gather_facts: yes

@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kuard-kustomize
+spec:
+  rules:
+  - host: kuar-demo.does.not.exist
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kuard-kustomize
+            port:
+              number: 80

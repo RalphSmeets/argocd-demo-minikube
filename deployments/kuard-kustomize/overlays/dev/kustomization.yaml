@@ -1,0 +1,10 @@
+resources:
+- ../../base
+
+patches:
+- path: host.yaml
+  target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: kuard-kustomize

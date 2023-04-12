@@ -1,0 +1,46 @@
+- name: Add argocd helm repo
+  kubernetes.core.helm_repository:
+    name: "{{ argocd_helm_repo_name }}"
+    repo_url: "{{ argocd_helm_repo_chart }}"
+
+- name: Install argocd helm chart
+  kubernetes.core.helm:
+    name: argocd
+    release_namespace: "{{ argocd_namespace }}"
+    create_namespace: true
+    chart_ref: "{{ argocd_helm_chart }}"
+    values: "{{ lookup('template', 'argocd_values.yaml') | from_yaml }}"
+
+- name: Add extra rbac rules for argocd
+  kubernetes.core.k8s:
+    state: present
+    template:
+      - path: argocd_extra_rbac.j2
+
+- name: Add argocd projects for different environments
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ argocd_namespace }}"
+    template:
+      - path: argocd_project.j2
+  loop:
+    "{{ argocd_projects }}"
+  loop_control:
+    loop_var: argocd_project
+
+- name: Get bitbucket secret from ssh-keys
+  ansible.builtin.shell: /usr/bin/base64 -w 0 -i ~/.ssh/id_rsa
+  register: argocd_svc_key
+
+- name: Add argocd private key and repo for different environments
+  kubernetes.core.k8s:
+    state: present
+    namespace: "{{ argocd_namespace }}"
+    template:
+      - path: argocd_application.j2
+  loop:
+    "{{ argocd_applications }}"
+  loop_control:
+    loop_var: argocd_application
+
+  

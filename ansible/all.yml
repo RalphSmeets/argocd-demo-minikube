@@ -1,0 +1,10 @@
+##########################################
+# Deploy k8s argocd helm chart
+##########################################
+
+- hosts: localhost
+  roles:
+    - minikube/check
+    - minikube/start
+    - argocd
+  gather_facts: yes

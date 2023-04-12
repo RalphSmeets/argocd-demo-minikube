@@ -1,0 +1,6 @@
+# code: language=ansible
+---
+
+- name: Delete minikube
+  command: minikube delete -p argo-cd-demo
+

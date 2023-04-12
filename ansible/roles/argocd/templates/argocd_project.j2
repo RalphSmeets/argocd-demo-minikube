@@ -1,0 +1,19 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ argocd_project.name }}
+  namespace: {{ argocd_namespace }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  sourceNamespaces:
+    - {{ argocd_project.namespace }}
+  sourceRepos:
+    - {{ argocd_project.repo_url }}
+  destinations:
+    - namespace: {{ argocd_project.namespace }}
+      server: {{ argocd_project.cluster }}
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'

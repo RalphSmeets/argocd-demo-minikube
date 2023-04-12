@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ argocd_application.name }}-argocd-repository
+  namespace: {{ argocd_namespace }}
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+data:
+  name: {{ argocd_application.name | b64encode }}
+  sshPrivateKey: >-
+    {{ argocd_svc_key.stdout }}
+  type: Z2l0
+  url: >-
+    {{ argocd_application.repo_url | b64encode }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ argocd_application.name }}
+  namespace: {{ argocd_application.namespace }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: {{ argocd_application.cluster }}
+    namespace: {{ argocd_application.namespace }}
+  project: {{ argocd_application.project }}
+  source:
+    path: {{ argocd_application.repo_path }}/
+    repoURL: {{ argocd_application.repo_url }}
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

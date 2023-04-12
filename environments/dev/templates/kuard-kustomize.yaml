@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kuard-kustomize
+  namespace: dev
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: {{ .Values.cluster }}
+    namespace: {{ .Values.environment }}
+  project: {{ .Values.environment }}
+  source:
+    path: deployments/kuard-kustomize/overlays/{{.Values.environment}}
+    repoURL: git@github.com:RalphSmeets/argocd-demo-minikube.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,46 @@
+universe:
+  apps_domain: minikube
+  name: localhost
+
+argocd_helm_repo_name: argo-cd
+argocd_helm_repo_chart: https://argoproj.github.io/argo-helm
+argocd_helm_chart_version: 5.27.1
+argocd_helm_chart: "{{ argocd_helm_repo_name }}/argo-cd"
+
+argocd_namespace: argocd
+argocd_alias: argocd
+
+argocd_helm_ingress: true
+argocd_default_admin_password: "$2a$10$FSF0dCoIYmXtTQevEFqFC.Y011zP75GjjNw.XUErGSCAG./cRFJKa"
+
+argocd_projects:
+  - name: dev
+    namespace: dev
+    cluster: https://kubernetes.default.svc
+    repo_url: git@github.com:RalphSmeets/argocd-demo-minikube.git
+  - name: i-test
+    namespace: "i-test-*"
+    cluster: https://kubernetes.default.svc
+    repo_url: git@github.com:RalphSmeets/argocd-demo-minikube.git
+  - name: pro
+    namespace: pro
+    cluster: https://kubernetes.default.svc
+    repo_url: git@github.com:RalphSmeets/argocd-demo-minikube.git
+
+# For this demo we use one repository with two different paths. But normally you would have at
+# least one repository per environment
+argocd_applications:
+  - name: dev-root
+    project: dev
+    repo_url: git@github.com:RalphSmeets/argocd-demo-minikube.git
+    repo_path: environments/dev
+    namespace: dev
+    cluster: https://kubernetes.default.svc
+
+  - name: pro-root
+    project: pro
+    repo_url: git@github.com:RalphSmeets/argocd-demo-minikube.git
+    repo_path: environments/pro
+    namespace: pro
+    cluster: https://kubernetes.default.svc
+

@@ -1,0 +1,3 @@
+cluster: https://kubernetes.default.svc
+environment: pro
+domain: localhost

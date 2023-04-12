@@ -1,0 +1,26 @@
+# code: language=ansible
+---
+
+- name: Assure minikube is installed
+  command: which minikube
+  register: which_minikube
+  failed_when: false
+  changed_when: false
+  
+- name: Register minikube is installed
+  set_fact:
+    minikube_installed: true
+  when:
+    which_minikube.rc == 0
+
+- name: Exit if minikube is not installed
+  fail:
+    msg: "Please install minikube first"
+  when:
+    which_minikube.rc > 0
+
+- name: Check minikube status for argo-cd-demo
+  command: minikube status -p argo-cd-demo
+  register: minikube_status
+  failed_when: false
+  changed_when: false

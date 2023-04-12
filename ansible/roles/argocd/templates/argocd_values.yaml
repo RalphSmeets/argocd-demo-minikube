@@ -1,0 +1,49 @@
+dex:
+  enabled: false
+server:
+  ingress:
+    enabled: {{ argocd_helm_ingress }}
+    https: false
+    hosts:
+      - "{{ argocd_alias }}.{{ universe.apps_domain }}.{{ universe.name }}"
+  extraArgs:
+    - --insecure
+
+configs:
+  secret:
+    argocdServerAdminPassword: "{{ argocd_default_admin_password }}"
+    extra:
+      accounts.pcc.password: "{{ argocd_default_admin_password }}"
+      accounts.developer.password: "{{ argocd_default_admin_password }}"
+      accounts.devop.password: "{{ argocd_default_admin_password }}"
+
+  rbac:
+    policy.csv: |
+      p, role:devops, applications, *, */*, allow
+      p, role:developers, applications, *, dev/*, allow
+      p, role:developers, applications, get, */*, allow
+      p, role:developers, logs, get, */*, allow
+      p, role:devops, clusters, get, *, allow
+      p, role:devops, repositories, get, *, allow
+      p, role:devops, repositories, create, *, allow
+      p, role:devops, repositories, update, *, allow
+      p, role:devops, repositories, delete, *, allow
+      p, role:devops, gpgkeys, get, *, allow
+      p, role:org-admin, applications, *, */*, allow
+      p, role:org-admin, clusters, get, *, allow
+      p, role:org-admin, repositories, get, *, allow
+      p, role:org-admin, repositories, create, *, allow
+      p, role:org-admin, repositories, update, *, allow
+      p, role:org-admin, repositories, delete, *, allow
+      g, pcc, role:org-admin
+      g, developer, role:developers
+      g, devop, role:devops
+      
+  cm:
+    accounts.pcc: apiKey, login
+    accounts.developer: apiKey, login
+    accounts.devop: apiKey, login
+
+  params:
+    application.namespaces: "{{ argocd_projects | map(attribute='namespace') | join(', ') }}"
+

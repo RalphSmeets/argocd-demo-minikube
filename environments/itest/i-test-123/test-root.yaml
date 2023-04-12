@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: i-test-kuard-helm
+  namespace: i-test-123
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: i-test-123
+  project: i-test
+  source:
+    path: charts/kuard
+    repoURL: git@github.com:RalphSmeets/argocd-demo-minikube.git
+    targetRevision: HEAD
+    helm:
+      parameters:
+        - name: "hostName"
+          value: kuard.i-test-123.localhost
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true

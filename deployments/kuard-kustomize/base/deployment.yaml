@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuard-kustomize
+spec:
+  selector:
+    matchLabels:
+      app: kuard-kustomize
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kuard-kustomize
+    spec:
+      containers:
+        - image: gcr.io/kuar-demo/kuard-amd64:green
+          imagePullPolicy: IfNotPresent
+          name: kuard
+          ports:
+            - containerPort: 8080

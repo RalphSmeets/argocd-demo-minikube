@@ -1,0 +1,13 @@
+namePrefix: kuard-
+
+commonLabels:
+  app: kuar-demo 
+
+images:
+  - name: service
+    newName: "{{DOCKER_IMAGE}}"
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml

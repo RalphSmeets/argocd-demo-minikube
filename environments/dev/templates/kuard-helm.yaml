@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kuard-helm
+  namespace: dev
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: {{ .Values.cluster  }}
+    namespace: {{ .Values.environment }}
+  project: {{ .Values.environment }}
+  source:
+    path: charts/kuard
+    repoURL: git@github.com:RalphSmeets/argocd-demo-minikube.git
+    targetRevision: HEAD
+    helm:
+      parameters:
+        - name: "hostname"
+          value: kuard-helm.{{.Values.environment}}.{{.Values.domain}}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

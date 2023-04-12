@@ -1,0 +1,39 @@
+# code: language=ansible
+---
+- name: Make sure /etc/ssl/certs exists inside of minikube
+  file:
+    path: ~/.minikube/files/etc/ssl/certs
+    state: directory
+    mode: '0755'
+
+- name: Start minikube if not already running
+  command: minikube start -p argo-cd-demo
+  when: minikube_status.rc > 0
+
+- name: Install ingress on minikube
+  command: minikube addons enable ingress -p argo-cd-demo
+
+- name: Add minikube to kubeconfig
+  command: minikube update-context -p argo-cd-demo
+
+- name: Create development namespace
+  kubernetes.core.k8s:
+    state: present
+    name: dev
+    kind: Namespace
+
+- name: Create production namespace
+  kubernetes.core.k8s:
+    state: present
+    name: pro
+    kind: Namespace
+
+- name: Wait for ingress to become ready
+  kubernetes.core.k8s_info:
+    kind: Pod
+    wait: yes
+    field_selectors:
+      - status.phase=Running
+    namespace: ingress-nginx
+    wait_sleep: 10
+    wait_timeout: 720
